@@ -79,7 +79,8 @@ def run_pseudobulk(subset: sc.AnnData, by: str, metadatas: str | list[str], min_
     return pb
 
 
-def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int):
+# TODO: Run with independent_filter off 
+def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int, independent_filter= True):
     """
     Run DESeq2 differential expression analysis on pseudobulk data.
 
@@ -98,6 +99,8 @@ def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int):
     min_cells : int
         The minimum number of cells required for a gene to be kept. If greater than 0,
         genes not expressed in at least this many samples will be filtered out.
+    independent_filter: bool
+        Whether to run the deseq with it's internal filter or not. Defaults to true
 
     Returns:
     --------
@@ -112,5 +115,5 @@ def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int):
     if min_cells > 0:
         sc.pp.filter_genes(dds, min_cells=min_cells)
     
-    dds.deseq2()
+    dds.deseq2(independent_filter=independent_filter)
     return dds
