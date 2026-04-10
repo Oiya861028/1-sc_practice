@@ -1,4 +1,5 @@
 import scanpy as sc
+import anndata as adata
 import pandas as pd
 import numpy as np
 from scipy import sparse
@@ -79,8 +80,7 @@ def run_pseudobulk(subset: sc.AnnData, by: str, metadatas: str | list[str], min_
     return pb
 
 
-# TODO: Run with independent_filter off 
-def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int, independent_filter= True):
+def run_deseq(adata: sc.AnnData, design: str | list[str], min_samples: int):
     """
     Run DESeq2 differential expression analysis on pseudobulk data.
 
@@ -99,8 +99,6 @@ def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int, independ
     min_cells : int
         The minimum number of cells required for a gene to be kept. If greater than 0,
         genes not expressed in at least this many samples will be filtered out.
-    independent_filter: bool
-        Whether to run the deseq with it's internal filter or not. Defaults to true
 
     Returns:
     --------
@@ -112,8 +110,10 @@ def run_deseq(adata: sc.Adata, design: str | list[str], min_cells: int, independ
 
     dds = DeseqDataSet(counts = counts, metadata=adata.obs, design=design)
 
-    if min_cells > 0:
-        sc.pp.filter_genes(dds, min_cells=min_cells)
+    if min_samples > 0:
+        sc.pp.filter_genes(dds, min_cells=min_samples)
     
-    dds.deseq2(independent_filter=independent_filter)
+    dds.deseq2()
     return dds
+
+# def run_deseqStats
