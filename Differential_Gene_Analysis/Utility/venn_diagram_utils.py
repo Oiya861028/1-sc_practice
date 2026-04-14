@@ -82,7 +82,7 @@ def create_labeled_venn3(
     plt.show()
 
 
-def load_filter_dataframes(base_path: Path) -> List[pd.DataFrame]:
+def load_filter_dataframes(base_path: str | Path) -> List[pd.DataFrame]:
     """
     Load all CSV files from a directory containing filter results.
 
@@ -92,6 +92,10 @@ def load_filter_dataframes(base_path: Path) -> List[pd.DataFrame]:
     Returns:
         List of pandas DataFrames, one for each filter threshold
     """
+    if type(base_path) == str:
+        base_path = Path(base_path)
+    if not Path(base_path).is_dir():
+        return "Path is not a directory!"
     filter_files = sorted([f for f in base_path.iterdir() if f.is_file() and f.suffix == '.csv'])
     return [pd.read_csv(file_path) for file_path in filter_files]
 
