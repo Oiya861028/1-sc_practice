@@ -8,6 +8,7 @@ def custom_MA_plot(
         ax,
         x="baseMean",
         y="log2FoldChange",
+        title = "MA Plot",
         n_top_genes=10,
         point_size=5,
         log1p_mean = True,
@@ -22,6 +23,7 @@ def custom_MA_plot(
     - ax: matplotlib axis to plot on
     - x: column name for x-axis (mean expression)
     - y: column name for y-axis (log fold change)
+    - title: The title for the plot
     - n_top_genes: number of top genes to label from up/down regulated
     - point_size: size of scatter points
     - log1p_mean: Whether to plot baseMean in log1p
@@ -87,7 +89,7 @@ def custom_MA_plot(
     # Set labels and title
     ax.set_xlabel('Mean Expression (log1p baseMean)')
     ax.set_ylabel('Log2 Fold Change')
-    ax.set_title('MA Plot')
+    ax.set_title(title)
 
     # Add legend
     ax.legend(title='Regulation', bbox_to_anchor=(1.05, 1), loc='upper left')
