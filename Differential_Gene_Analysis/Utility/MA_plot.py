@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
-
+import numpy as np
 
 def custom_MA_plot(
         stats_df,
@@ -10,6 +10,7 @@ def custom_MA_plot(
         y="log2FoldChange",
         n_top_genes=10,
         point_size=5,
+        log1p_mean = True,
         alpha_threshold=0.05,
         lfc_threshold=0.5,
         custom_degs_list=None,) -> None:
@@ -23,6 +24,7 @@ def custom_MA_plot(
     - y: column name for y-axis (log fold change)
     - n_top_genes: number of top genes to label from up/down regulated
     - point_size: size of scatter points
+    - log1p_mean: Whether to plot baseMean in log1p
     - alpha_threshold: significance threshold for p-adjusted values
     - lfc_threshold: log fold change threshold for significance
     - custom_degs_list: optional list of genes to highlight
@@ -44,6 +46,11 @@ def custom_MA_plot(
         stats_df['diff_expr'] = 'NS'
         stats_df.loc[stats_df['Significance'] & (stats_df[y] > lfc_threshold), 'diff_expr'] = 'up'
         stats_df.loc[stats_df['Significance'] & (stats_df[y] < -lfc_threshold), 'diff_expr'] = 'down'
+
+    # Use log scale for x-axis if specified
+    if log1p_mean:
+        stats_df["log_1p_mean"] = np.log1p(stats_df["baseMean"])
+        x = "log_1p_mean"
 
     # Plot all points
     colors = {'NS': 'gray', 'up': 'red', 'down': 'blue'}
@@ -78,13 +85,9 @@ def custom_MA_plot(
     ax.axhline(y=-lfc_threshold, color='red', linestyle='--', alpha=0.7, linewidth=1)
 
     # Set labels and title
-    ax.set_xlabel('Mean Expression (baseMean)')
+    ax.set_xlabel('Mean Expression (log1p baseMean)')
     ax.set_ylabel('Log2 Fold Change')
     ax.set_title('MA Plot')
-
-    # Use log scale for x-axis if values span large range
-    if stats_df[x].max() / stats_df[x].min() > 100:
-        ax.set_xscale('log')
 
     # Add legend
     ax.legend(title='Regulation', bbox_to_anchor=(1.05, 1), loc='upper left')
